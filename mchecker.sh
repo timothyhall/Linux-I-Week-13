@@ -1,20 +1,22 @@
 #!/bin/bash
+# Timothy Hall
+# This program checks the mail spool size for the current USER
+# using ls -l and wc -c to count the number of bytes in the file
+# every 30 seconds, the size of the previous mail
 
-#MAILFILE=/var/spool/mail/halltim
-#MAILSIZE1=$(stat -c%s "$MAILFILE")
-# echo "Size of $MAILFILE = $MAILSIZE bytes."
-account=$USER
+echo "mchecker running"
 
-echo "$account, You've got mail!"
+# initial mail size check, setting variable to byte count of mail file size
+MAILSIZE=$(wc -c /var/spool/mail/$USER  | awk '{print $1}')
 
 while true ; do
-      MAILSIZE=$(ls -l /var/spool/mail/$account | wc -c)
-      sleep 30
-      NEWMAILSIZE=$(ls -l /var/spool/mail/$account | wc -c)
-      if [ $MAILSIZE -lt $NEWMAILSIZE ]
-      then
-              echo "You've got mail!"
+      #second variable based on a new byte count of the mail file size
+      NEWMAILSIZE=$(wc -c /var/spool/mail/$USER  | awk '{print $1}')
+      if [[ $MAILSIZE -lt $NEWMAILSIZE ]]
+        then
+            echo "$USER, you have new mail"
+            exit
       else
-              sleep 30
+        sleep 30
       fi
 done
